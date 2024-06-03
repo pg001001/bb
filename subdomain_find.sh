@@ -5,6 +5,7 @@ find_subdomains() {
     local domain=$1
     local date=$(date +'%Y-%m-%d')
     local base_dir="${domain}/$([ "$IGNORE_SPLIT" = "false" ] && echo "${date}/")"
+    local wordlist="/home/user/main/subdomains_brute_force/n0kovo_subdomains_tiny.txt"
     mkdir -p "${base_dir}"
     
     # Subdomain enumeration
@@ -38,6 +39,9 @@ find_subdomains() {
     echo "Running assetfinder for ${domain}..."
     assetfinder "${domain}" | tee -a "${base_dir}/assetfinder.txt"
     echo "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+
+    echo "Running gobuster for subdomain brute force on ${domain}..."
+    gobuster dns -d "${domain}" -w "$wordlist" -o "${base_dir}/${domain}_subdomains_dns_brute.txt"
 
     # Combine all results into one file, sort and make unique
     echo "Combining all subdomain results..."

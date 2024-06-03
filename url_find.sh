@@ -57,6 +57,9 @@ url_enumeration() {
         # Output the result to a file named after the test in the specified vuln subdirectory
         cat "${base_dir}/liveallurls_${domain}.txt" | gf $test > "${base_dir}/vulv/$test.txt"
     done
+
+    paramspider --domain "${domain}" --exclude woff,css,js,png,svg,php,jpg --output "${base_dir}/paramspider_${domain}.txt"
+
 }
 
 # Check if domain is provided

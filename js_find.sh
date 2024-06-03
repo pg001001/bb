@@ -17,22 +17,24 @@ scan_js() {
     echo "Scanning for JavaScript files on ${domain}..."
     echo "${domain}" | katana | grep "\.js$" | httpx -mc 200 | tee "${base_dir}/js.txt"
     # echo "${domain}" | gau | grep "\.js$" | httpx -mc 200 | tee "${base_dir}/js.txt"
-    # cat allUrls_${domain}.txt | grep "\.js$" | httpx -mc 200 | tee "${base_dir}/js.txt"
+    cat allUrls_${domain}.txt | grep "\.js$" | httpx -mc 200 | tee "${base_dir}/js.txt"
     echo "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 
     # Download each JavaScript file
     echo "Downloading JavaScript files..."
-    file="${base_dir}/js.txt"
-    while IFS= read -r link; do
-        wget -q "$link" -P "${base_dir}/js_files/"
-    done < "$file"
+    # file="${base_dir}/js.txt"
+    # while IFS= read -r link; do
+    #     wget -q "$link" -P "${base_dir}/js_files/"
+    # done < "$file"
+
+    # mkdir -p "${base_dir}/js_files/"  && 
+    xargs -a "${base_dir}/js.txt" -I {} wget -q {} -P "${base_dir}/js_files/"
+
     echo "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 
     # Search for sensitive information in downloaded JavaScript files
     echo "Searching for sensitive information in JavaScript files..."
-    # grep -r -E "aws_access_key|aws_secret_key|api key|passwd|pwd|heroku|slack|firebase" "${base_dir}/js_files/" | tee "${base_dir}/sensitive_info.txt"
-    grep -r -E "aws_access_key|aws_secret_key|api_key|access_token|auth_token|db_username|db_password|database_url|oauth|heroku|slack|firebase|github_token|azure_storage|google_cloud_key|s3_config|sendgrid_api_key|twilio_api_key|jwt|sftp" "${base_dir}/js_files/" | tee "${base_dir}/sensitive_info.txt"
-
+    grep -r -E "aws_access_key|aws_secret_key|api key|passwd|pwd|heroku|slack|firebase" "${base_dir}/js_files/" | tee "${base_dir}/sensitive_info.txt"
 
     # nuclei -l js.txt -t ~/nuclei-templates/exposures/ -o js_bugs.txt
     echo "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
